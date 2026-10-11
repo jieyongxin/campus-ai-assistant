@@ -1,0 +1,13 @@
+services:
+  campus-ai:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # 知识库和索引挂载出来，改资料后重建索引即可生效，无需重新构建镜像
+      - ./data/knowledge:/app/data/knowledge
+      - ./data/index:/app/data/index
+      - ./data/logs:/app/data/logs
+    restart: unless-stopped

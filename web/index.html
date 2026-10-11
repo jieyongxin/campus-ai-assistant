@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>校园智能客服</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+<style>
+  :root{
+    --primary:#0B4F9E;
+    --accent:#F2A100;
+    --bg:#F4F6FA;
+    --card:#FFFFFF;
+    --text:#1B2430;
+    --muted:#6B7787;
+    --line:#E4E9F0;
+    --radius:16px;
+    --shadow:0 8px 30px rgba(16,38,73,.10);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.65;display:flex;flex-direction:column;
+  }
+  header{
+    background:linear-gradient(135deg,var(--primary) 0%,#083B76 100%);
+    color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 2px 14px rgba(11,79,158,.22);z-index:5;flex:none;
+  }
+  .logo{
+    width:40px;height:40px;border-radius:12px;flex:none;background:rgba(255,255,255,.16);
+    display:grid;place-items:center;font-size:20px;border:1px solid rgba(255,255,255,.25);
+  }
+  .hdr-main{flex:1;min-width:0}
+  .hdr-main h1{margin:0;font-size:16px;font-weight:600;letter-spacing:.2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hdr-main p{margin:2px 0 0;font-size:12px;opacity:.85;display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#39D98A;box-shadow:0 0 0 3px rgba(57,217,138,.22)}
+  .dot.off{background:#FFB020;box-shadow:0 0 0 3px rgba(255,176,32,.22)}
+  .hdr-actions{display:flex;gap:8px;flex:none}
+  .icon-btn{
+    width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.28);
+    background:rgba(255,255,255,.10);color:#fff;cursor:pointer;font-size:15px;
+    display:grid;place-items:center;transition:.18s;padding:0;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.22)}
+  main{flex:1;overflow-y:auto;padding:20px 16px 8px;scroll-behavior:smooth}
+  .wrap{max-width:820px;margin:0 auto}
+  .msg{display:flex;gap:10px;margin-bottom:18px;animation:in .28s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .avatar{
+    width:34px;height:34px;border-radius:11px;flex:none;display:grid;place-items:center;
+    font-size:16px;background:var(--card);border:1px solid var(--line);box-shadow:0 2px 8px rgba(16,38,73,.06);
+  }
+  .msg.user{flex-direction:row-reverse}
+  .msg.user .avatar{background:var(--primary);color:#fff;border-color:transparent}
+  .bubble{
+    max-width:min(78%,640px);padding:12px 15px;border-radius:var(--radius);
+    background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);overflow-wrap:anywhere;
+  }
+  .msg.user .bubble{background:var(--primary);color:#fff;border-color:transparent}
+  .msg.user .bubble a{color:#fff}
+  .bubble p{margin:0 0 8px}
+  .bubble p:last-child{margin-bottom:0}
+  .bubble ul,.bubble ol{margin:6px 0;padding-left:20px}
+  .bubble li{margin:3px 0}
+  .bubble strong{font-weight:600}
+  .bubble code{background:rgba(11,79,158,.08);padding:1px 5px;border-radius:5px;font-size:13px}
+  .bubble blockquote{
+    margin:8px 0;padding:8px 12px;border-left:3px solid var(--accent);
+    background:rgba(242,161,0,.08);border-radius:0 8px 8px 0;color:var(--muted);font-size:13.5px;
+  }
+  .cite{
+    display:inline-block;min-width:17px;height:17px;line-height:17px;text-align:center;
+    font-size:11px;border-radius:5px;background:rgba(11,79,158,.14);color:var(--primary);
+    margin:0 1px;padding:0 3px;font-weight:600;vertical-align:1px;
+  }
+  .msg.user .bubble .cite{background:rgba(255,255,255,.24);color:#fff}
+  .cursor::after{content:"▍";color:var(--primary);animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .sources{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+  .sources-title{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .src{
+    display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--primary);
+    background:rgba(11,79,158,.08);border:1px solid rgba(11,79,158,.18);
+    border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;cursor:pointer;max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .src:hover{background:rgba(11,79,158,.16)}
+  .src b{font-weight:600}
+  .src-panel{
+    margin-top:8px;font-size:12.5px;color:var(--muted);background:rgba(11,79,158,.04);
+    border-radius:10px;padding:10px 12px;white-space:pre-wrap;line-height:1.6;
+  }
+  .fb{display:flex;gap:8px;margin-top:9px}
+  .fb button{
+    border:1px solid var(--line);background:transparent;border-radius:8px;cursor:pointer;
+    font-size:12px;color:var(--muted);padding:2px 9px;transition:.15s;font-family:inherit;
+  }
+  .fb button:hover{border-color:var(--primary);color:var(--primary)}
+  .fb button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .welcome{text-align:center;padding:min(12vh,104px) 8px 8px;color:var(--muted)}
+  .welcome h2{font-size:19px;color:var(--text);margin:12px 0 6px;font-weight:600}
+  .welcome .em{font-size:38px}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:18px auto 6px;max-width:640px}
+  .chip{
+    border:1px solid var(--line);background:var(--card);border-radius:999px;
+    padding:8px 15px;font-size:13.5px;cursor:pointer;color:var(--text);
+    transition:.18s;box-shadow:0 2px 10px rgba(16,38,73,.05);font-family:inherit;
+  }
+  .chip:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+  .typing{display:flex;gap:4px;padding:4px 2px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce 1.3s infinite}
+  .typing i:nth-child(2){animation-delay:.18s}
+  .typing i:nth-child(3){animation-delay:.36s}
+  @keyframes bounce{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+  footer{flex:none;padding:10px 16px 14px;background:var(--bg)}
+  .composer{
+    max-width:820px;margin:0 auto;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;box-shadow:var(--shadow);display:flex;align-items:flex-end;
+    padding:8px 8px 8px 16px;gap:8px;
+  }
+  .composer textarea{
+    flex:1;border:none;outline:none;resize:none;font:inherit;padding:8px 0;max-height:140px;
+    background:transparent;color:var(--text);line-height:1.6;
+  }
+  .composer textarea::placeholder{color:#9AA6B6}
+  .send{
+    width:38px;height:38px;border-radius:12px;border:none;cursor:pointer;flex:none;
+    background:var(--primary);color:#fff;font-size:16px;display:grid;place-items:center;
+    transition:.18s;font-family:inherit;
+  }
+  .send:disabled{opacity:.4;cursor:not-allowed}
+  .legal{max-width:820px;margin:8px auto 0;font-size:11.5px;color:#9AA6B6;text-align:center;line-height:1.55}
+  .banner{
+    max-width:820px;margin:0 auto 14px;background:#FFF7E6;
+    border:1px solid #FFE0A3;border-radius:12px;padding:9px 13px;font-size:12.5px;color:#8A6100;
+  }
+  @media (max-width:600px){
+    .bubble{max-width:86%}
+    main{padding:14px 12px 4px}
+    footer{padding:8px 12px 12px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🎓</div>
+  <div class="hdr-main">
+    <h1 id="schoolName">校园智能客服</h1>
+    <p><span class="dot" id="statusDot"></span><span id="statusText">连接中…</span></p>
+  </div>
+  <div class="hdr-actions">
+    <button class="icon-btn" id="btnClear" title="开始新对话">↺</button>
+  </div>
+</header>
+<main id="main"><div class="wrap" id="wrap"></div></main>
+<footer>
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="请输入你的问题，例如：学费多少钱一年？"></textarea>
+    <button class="send" id="send" title="发送">➤</button>
+  </div>
+  <div class="legal" id="legal"></div>
+</footer>
+<script>
+const state = { sessionId: localStorage.getItem("dcai_session") || "", busy: false, meta: null, srcMap: {} };
+const $ = (id) => document.getElementById(id);
+const wrap = $("wrap"), main = $("main"), input = $("input"), sendBtn = $("send");
+
+function esc(s){
+  return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function md(text){
+  let h = esc(text);
+  h = h.replace(/\[\s*(\d+)\s*\]/g, '<span class="cite" data-i="$1">$1</span>');
+  h = h.replace(/`([^`]+)`/g, "<code>$1</code>");
+  h = h.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  h = h.replace(/(^|\s)(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+  const lines = h.split("\n");
+  const out = [];
+  let list = null, quote = [];
+  const closeList = () => { if(list){ out.push("</" + list + ">"); list = null; } };
+  const flushQuote = () => { if(quote.length){ out.push("<blockquote>" + quote.join("<br>") + "</blockquote>"); quote = []; } };
+  for(const raw of lines){
+    const line = raw.replace(/\s+$/, "");
+    if(/^\s*$/.test(line)){ closeList(); flushQuote(); continue; }
+    const q = line.match(/^&gt;\s?(.*)$/);
+    if(q){ closeList(); quote.push(q[1]); continue; }
+    flushQuote();
+    const ul = line.match(/^\s*[-*•]\s+(.*)$/);
+    const ol = line.match(/^\s*\d+[.、)]\s+(.*)$/);
+    if(ul){ if(list !== "ul"){ closeList(); out.push("<ul>"); list = "ul"; } out.push("<li>" + ul[1] + "</li>"); continue; }
+    if(ol){ if(list !== "ol"){ closeList(); out.push("<ol>"); list = "ol"; } out.push("<li>" + ol[1] + "</li>"); continue; }
+    closeList();
+    out.push("<p>" + line + "</p>");
+  }
+  closeList(); flushQuote();
+  return out.join("");
+}
+
+function scrollDown(force){
+  const near = main.scrollHeight - main.scrollTop - main.clientHeight < 140;
+  if(force || near) requestAnimationFrame(() => { main.scrollTop = main.scrollHeight; });
+}
+
+function addMessage(role, html){
+  const el = document.createElement("div");
+  el.className = "msg " + role;
+  const avatar = role === "user" ? "🧑" : "🎓";
+  el.innerHTML = '<div class="avatar">' + avatar + '</div><div class="bubble">' + html + "</div>";
+  wrap.appendChild(el);
+  scrollDown(true);
+  return el.querySelector(".bubble");
+}
+
+function renderWelcome(){
+  const name = (state.meta && state.meta.school && state.meta.school.assistant_name) || "智能客服";
+  const school = (state.meta && state.meta.school && state.meta.school.name) || "";
+  const qs = (state.meta && state.meta.quick_questions) || [];
+  const bannerWrap = wrap.querySelector(".banner");
+  const banner = bannerWrap ? bannerWrap.outerHTML : "";
+  wrap.innerHTML = banner +
+    '<div class="welcome"><div class="em">🎓</div><h2>你好，我是' + esc(name) + "</h2>" +
+    "<p>" + esc(school) + "智能客服<br>招生、专业、教务、校园生活，都可以问我。</p>" +
+    '<div class="chips">' + qs.map(q => '<button class="chip">' + esc(q) + "</button>").join("") + "</div></div>";
+  wrap.querySelectorAll(".chip").forEach(b => { b.onclick = () => ask(b.textContent); });
+}
+
+function sourcesHtml(items){
+  if(!items || !items.length) return "";
+  state.srcMap = {};
+  const chips = items.map((s, i) => {
+    state.srcMap[i + 1] = s;
+    const sec = shortSection(s);
+    const secLabel = sec ? " · " + esc(sec) : "";
+    return '<span class="src" data-i="' + (i + 1) + '"><b>[' + (i + 1) + "]</b> " + esc(s.title) + secLabel + "</span>";
+  }).join("");
+  return '<div class="sources"><div class="sources-title">📚 参考来源（点击展开原文）</div>' + chips +
+         '<div class="src-panel" hidden></div></div>';
+}
+
+/* 面包屑里已经带了文档标题，展示时去掉重复的前缀 */
+function shortSection(s){
+  let sec = (s && s.section) || "";
+  const title = (s && s.title) || "";
+  if(title && sec.indexOf(title + " > ") === 0) sec = sec.slice(title.length + 3);
+  return sec === title ? "" : sec;
+}
+
+function bindSources(bubble){
+  bubble.querySelectorAll(".src").forEach(el => {
+    el.onclick = () => {
+      const panel = bubble.querySelector(".src-panel");
+      const s = state.srcMap[el.dataset.i];
+      if(!s || !panel) return;
+      if(panel.hidden || panel.dataset.i !== el.dataset.i){
+        const sec = shortSection(s);
+        panel.textContent = "【" + el.dataset.i + "】" + s.title + (sec ? " · " + sec : "") +
+          "\n\n" + (s.text || "");
+        panel.dataset.i = el.dataset.i;
+        panel.hidden = false;
+      } else {
+        panel.hidden = true;
+      }
+    };
+  });
+}
+
+function addFeedback(bubble, question, answer){
+  const bar = document.createElement("div");
+  bar.className = "fb";
+  bar.innerHTML = '<button data-r="up">👍 有帮助</button><button data-r="down">👎 没帮上</button>';
+  bar.querySelectorAll("button").forEach(b => {
+    b.onclick = () => {
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ session_id: state.sessionId, question: question, answer: answer, rating: b.dataset.r })
+      }).catch(() => {});
+      bar.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      b.textContent = b.dataset.r === "up" ? "已记录，谢谢！" : "已记录，我们会补充资料";
+    };
+  });
+  bubble.appendChild(bar);
+  scrollDown();
+}
+
+async function ask(question){
+  question = (question || "").trim();
+  if(!question || state.busy) return;
+  state.busy = true;
+  sendBtn.disabled = true;
+  const w = wrap.querySelector(".welcome");
+  if(w) w.parentNode.removeChild(w);
+  input.value = "";
+  autoGrow();
+
+  addMessage("user", md(question));
+  const bubble = addMessage("assistant", '<div class="typing"><i></i><i></i><i></i></div>');
+  let answer = "", srcHtml = "", sources = [], started = false;
+
+  try{
+    const resp = await fetch("/api/chat/stream", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ question: question, session_id: state.sessionId || null })
+    });
+    if(resp.status === 429) throw new Error("提问太快了，请稍等一会儿再问～");
+    if(!resp.ok || !resp.body) throw new Error("服务暂时不可用，请稍后重试");
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    while(true){
+      const chunk = await reader.read();
+      if(chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
+      for(const part of parts){
+        const line = part.split("\n").find(l => l.indexOf("data:") === 0);
+        if(!line) continue;
+        let ev;
+        try { ev = JSON.parse(line.slice(5).trim()); } catch(e){ continue; }
+
+        if(ev.type === "sources"){
+          sources = ev.items || [];
+          srcHtml = sourcesHtml(sources);
+          if(sources.length && answer) bubble.innerHTML = md(answer) + srcHtml;
+        } else if(ev.type === "delta"){
+          if(!started){ started = true; bubble.classList.add("cursor"); }
+          answer += ev.text;
+          bubble.innerHTML = md(answer) + srcHtml;
+          scrollDown();
+        } else if(ev.type === "end"){
+          if(ev.session_id){
+            state.sessionId = ev.session_id;
+            localStorage.setItem("dcai_session", ev.session_id);
+          }
+        } else if(ev.type === "error"){
+          answer += (answer ? "\n\n" : "") + "抱歉，生成回答时出错了：" + ev.message;
+        }
+      }
+    }
+  } catch(err){
+    answer = answer || ("抱歉，" + (err && err.message ? err.message : "网络异常，请稍后重试"));
+  }
+
+  bubble.classList.remove("cursor");
+  bubble.innerHTML = md(answer) + srcHtml;
+  bindSources(bubble);
+  if(sources.length){
+    const h = document.createElement("div");
+    h.className = "hint";
+    h.textContent = "以上内容依据学校资料生成，正式事项请以学校通知为准。";
+    bubble.appendChild(h);
+  }
+  addFeedback(bubble, question, answer);
+  state.busy = false;
+  sendBtn.disabled = false;
+  input.focus();
+  scrollDown();
+}
+
+function autoGrow(){
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 140) + "px";
+}
+input.addEventListener("input", autoGrow);
+input.addEventListener("keydown", e => {
+  if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); ask(input.value); }
+});
+sendBtn.onclick = () => { ask(input.value); };
+$("btnClear").onclick = () => {
+  if(state.sessionId){
+    fetch("/api/session/reset", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ session_id: state.sessionId })
+    }).catch(() => {});
+  }
+  state.sessionId = "";
+  localStorage.removeItem("dcai_session");
+  renderWelcome();
+  scrollDown(true);
+};
+
+(async function init(){
+  try{
+    const resp = await fetch("/api/meta");
+    const meta = await resp.json();
+    state.meta = meta;
+    document.title = (meta.school && meta.school.name ? meta.school.name : "校园") + " · 智能客服";
+    $("schoolName").textContent = (meta.school && meta.school.name ? meta.school.name : "校园智能客服") +
+      " · " + (meta.school && meta.school.assistant_name ? meta.school.assistant_name : "智能客服");
+    $("legal").textContent = (meta.brand && meta.brand.disclaimer) || "";
+    const rootStyle = document.documentElement.style;
+    if(meta.brand && meta.brand.primary_color) rootStyle.setProperty("--primary", meta.brand.primary_color);
+    if(meta.brand && meta.brand.accent_color) rootStyle.setProperty("--accent", meta.brand.accent_color);
+
+    const ready = meta.index && meta.index.ready;
+    $("statusDot").className = "dot" + (ready ? "" : " off");
+    $("statusText").textContent = ready
+      ? "已加载 " + meta.index.documents + " 份资料 · " + meta.index.chunks + " 条知识"
+      : "知识库未就绪，请管理员重建索引";
+
+    const notices = [];
+    if(!meta.llm_enabled) notices.push("尚未配置大模型 API Key，当前仅返回知识库原文检索结果。");
+    if(meta.index && meta.index.stale) notices.push("知识库已更新但索引未重建，回答可能不是最新版本。");
+    wrap.innerHTML = "";
+    if(notices.length){
+      const b = document.createElement("div");
+      b.className = "banner";
+      b.textContent = "提示：" + notices.join(" ");
+      wrap.appendChild(b);
+    }
+    renderWelcome();
+  } catch(err){
+    $("statusText").textContent = "服务未启动或连接失败";
+    $("statusDot").className = "dot off";
+    addMessage("assistant", md("无法连接到后端服务。请确认已运行 `uvicorn app.main:app --reload` 后刷新页面。"));
+  }
+  input.focus();
+})();
+</script>
+</body>
+</html>

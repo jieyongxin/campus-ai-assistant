@@ -1,0 +1,11 @@
+# 运行依赖（Python 3.10+）
+fastapi>=0.110
+uvicorn[standard]>=0.27
+httpx>=0.27
+pydantic>=2.6
+PyYAML>=6.0
+python-multipart>=0.0.9
+numpy>=1.26
+
+# 可选：中文分词更好，缺失时自动退化为字符 n-gram
+jieba>=0.42.1

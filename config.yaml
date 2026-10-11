@@ -1,0 +1,97 @@
+# ============================================================
+#  校园 AI 客服 · 主配置
+#  带 【待核对】 的字段请务必改成校方发布的准确信息
+# ============================================================
+
+school:
+  # 学校名称。2023年10月经教育部批准，由"云南大学滇池学院"转设更名为"滇池学院"
+  name: "滇池学院"
+  short_name: "滇池学院"
+  # 客服机器人的名字，会出现在欢迎语和头像旁
+  assistant_name: "滇小答"
+  city: "云南省昆明市"
+  # 学校官网
+  website: "https://www.dcc.edu.cn"
+  # 学校总机 / 招生办电话（来源：2025年招生章程）
+  hotline: "0871-64891008"
+  admissions_phone: "0871-64316805、0871-64313233"
+  # 招生官网（招生就业处）
+  admissions_site: "https://www.dcc.edu.cn"
+  # 校区地址（来源：2025年招生章程）
+  campuses:
+    - "国家旅游度假区校区（海埂校区）：云南省昆明滇池国家旅游度假区红塔东路2号"
+    - "杨林校区：云南省昆明市嵩明职教新城文轩路"
+    - "阳宗海校区：云南省昆明市阳宗海风景名胜区汤池街道"
+  # 人工客服服务时间，未命中知识库时会展示
+  service_hours: "工作日 8:30-17:30"
+
+brand:
+  primary_color: "#0B4F9E"
+  accent_color: "#F2A100"
+  # 页脚免责声明
+  disclaimer: "本回答由 AI 依据学校公开资料生成，仅供参考；招生、缴费、学籍等以学校正式文件为准。"
+
+# 首屏推荐问题（点一下就直接问）
+quick_questions:
+  - "今年的招生计划和录取规则是什么？"
+  - "学费和住宿费大概多少？"
+  - "学校有哪些学院和专业？"
+  - "新生报到需要带哪些材料？"
+  - "怎么申请奖学金和助学贷款？"
+  - "学校地址和招生办电话是多少？"
+
+llm:
+  # 任何 OpenAI 兼容的 /chat/completions 接口
+  base_url: "https://api.deepseek.com/v1"
+  model: "deepseek-chat"
+  temperature: 0.2
+  max_tokens: 1200
+  timeout: 60
+  # 是否流式输出（网页端建议 true）
+  stream: true
+
+retrieval:
+  top_k: 5
+  # 融合前各自召回的条数
+  candidate_k: 12
+  # RRF 融合参数，越小越偏向头部结果
+  rrf_k: 60
+  # 低于该归一化得分的检索结果会被丢弃，触发兜底话术
+  min_score: 0.18
+  # 查询关键词的 IDF 加权覆盖率下限。它能挡住"跑题问题被强行匹配"的情况，
+  # 调高更保守（更容易回答"没查到"），调低更激进（更容易给答案）。建议 0.25-0.45
+  min_coverage: 0.42
+  # 分块目标长度（字符）与重叠
+  chunk_size: 450
+  chunk_overlap: 80
+  embedding:
+    # local = 内置 LSA（无需联网/下载）；api = 调用 Embedding 接口
+    provider: "local"
+    dim: 256                # local 模式降维后的维度
+    base_url: ""
+    model: ""
+
+chat:
+  # 携带进上下文的历史轮数（一问一答算 1 轮）
+  history_turns: 4
+  # 单条用户消息最大长度
+  max_question_chars: 800
+  # 每个 IP 每分钟最多多少次请求
+  rate_limit_per_minute: 30
+  # 会话闲置多久后清空（秒）
+  session_ttl: 3600
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  # 允许跨域的站点：只有这里列出的来源，其页面里的 JS 才能调用本服务接口。
+  # 页面由本服务自己托管时属于同源，不受此限制；这里主要是给"嵌到学校官网"用的。
+  # 【待核对】请按实际嵌入门户的域名增删，不要留 ["*"]，否则任何网站都能白嫖你的
+  # 大模型额度（接口本身没有登录，只有按 IP 的限流）。
+  cors_origins:
+    - "https://www.dcc.edu.cn"
+    - "https://dcc.edu.cn"
+    - "http://www.dcc.edu.cn"
+    - "http://dcc.edu.cn"
+    - "http://127.0.0.1:8000"
+    - "http://localhost:8000"

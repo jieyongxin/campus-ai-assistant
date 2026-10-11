@@ -1,0 +1,9 @@
+# 统一换行：仓库内一律存 LF，避免 Windows 编辑器把 run.sh 之类改成 CRLF。
+# 需要保留原样的二进制文件显式标记。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.npy binary
+*.npz binary

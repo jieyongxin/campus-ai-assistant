@@ -1,0 +1,30 @@
+# 构建镜像时不需要、也不应该进镜像层的东西。
+# 注意：.env 里有真实的大模型 Key 和管理令牌，一旦 COPY 进镜像层，
+# 之后即使删掉文件，密钥仍留在层历史里无法清除。
+
+# 密钥与本地配置
+.env
+
+# 本地已装好的依赖（镜像内按 requirements.txt 重新安装）
+.libs/
+.venv/
+venv/
+
+# 构建时不需要：索引和日志是运行时数据，由 docker-compose 挂载
+data/index/
+data/logs/
+*.log
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 版本控制与编辑器
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+
+# 文档与截图（运行时不读取）
+docs/
