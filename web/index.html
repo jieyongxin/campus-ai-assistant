@@ -409,7 +409,7 @@ $("btnClear").onclick = () => {
       : "知识库未就绪，请管理员重建索引";
 
     const notices = [];
-    if(!meta.llm_enabled) notices.push("尚未配置大模型 API Key，当前仅返回知识库原文检索结果。");
+    if(!meta.llm_enabled) notices.push("当前为资料原文检索模式，回答直接摘自学校公开资料。");
     if(meta.index && meta.index.stale) notices.push("知识库已更新但索引未重建，回答可能不是最新版本。");
     wrap.innerHTML = "";
     if(notices.length){

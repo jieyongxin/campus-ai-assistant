@@ -112,7 +112,7 @@ class ChatEngine:
 
         if not self.llm.enabled:
             text = extractive_answer(hits)
-            note = "> 当前运行在**纯检索模式**（未配置大模型 API Key），以下是从知识库中命中的原文：\n\n"
+            note = "> 以下内容摘自学校公开资料原文，供你参考：\n\n"
             yield {"type": "delta", "text": note + text}
             yield {
                 "type": "done",

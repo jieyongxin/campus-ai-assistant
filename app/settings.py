@@ -149,6 +149,10 @@ class Settings(BaseModel):
             s.retrieval.embedding.model = _env("EMBEDDING_MODEL")
 
         s.llm_api_key = _env("LLM_API_KEY")
+        # 大模型总开关：LLM_ENABLED=0 时强制走纯检索模式（不调用大模型、不消耗任何额度），
+        # 适合对外演示或开放局域网访问；改回 1 或留空即恢复。
+        if _env("LLM_ENABLED").lower() in ("0", "false", "no", "off"):
+            s.llm_api_key = ""
         s.embedding_api_key = _env("EMBEDDING_API_KEY") or s.llm_api_key
         s.admin_token = _env("ADMIN_TOKEN", "change-me-please")
         return s
